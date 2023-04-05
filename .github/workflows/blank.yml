@@ -1,0 +1,32 @@
+name: List Changed Files
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  list_files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: List Changed Files
+        id: list_files
+        run: |
+          ALL_CHANGED_FILES=()
+          PR_COMMITS=$(git log --pretty=format:%H HEAD~..HEAD)
+
+          for COMMIT in $PR_COMMITS
+          do
+            CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $COMMIT)
+
+            for FILE in $CHANGED_FILES
+            do
+              ALL_CHANGED_FILES+=($FILE)
+            done
+          done
+
+          echo ::set-output name=files::${ALL_CHANGED_FILES[@]}
+      - name: Print Changed Files
+        run: echo ${{ steps.list_files.outputs.files }}
