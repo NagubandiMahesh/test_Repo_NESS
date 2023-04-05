@@ -33,6 +33,7 @@ jobs:
 
       - name: List all changed files
         run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_and_modified_files }}; do
-            echo "$file was changed"
-          done
+          git diff --name-only HEAD^ HEAD
+          #for file in ${{ steps.changed-files.outputs.all_changed_and_modified_files }}; do
+           # echo "$file was changed"
+          #done
